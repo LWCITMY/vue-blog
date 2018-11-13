@@ -13,6 +13,6 @@ export const dbName = {
     database:'lwc_blog'
 }
 
-export const base_API = 'api/'
+export const base_API = '/api'
 
 export const secret = 'lwc_blog'

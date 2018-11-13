@@ -1,5 +1,6 @@
 import koa from 'koa'
 import Router from 'koa-router'
+//跨域
 import cors from 'koa-cors'
 import bodyParser from 'koa-bodyparser'
 //引入路由文件

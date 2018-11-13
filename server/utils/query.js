@@ -16,16 +16,16 @@ init.query('CREATE DATABASE lwc_blog',err=>{
     //然后执行sql文件夹下的lwc_blog.sql文件,对应的表和测试数据就已经存在数据库里面了
     pool = mysql.createPool(db)
     if(err){
-        console.log('lwc_blog database created already')
+        console.log('数据已经存在')
     }else {
-        console.log('create lwc_blog Database')
         query(sqlContent).then(res=>{
-            console.log('import sql is success')
+            console.log('数据库创建成功')
         }).catch(err=>{
-            console.log('import sql is success')
+            console.log(err)
         })
     }
 })
+init.end()
 
 
 export default function query(sql,values){
