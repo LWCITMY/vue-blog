@@ -22,8 +22,8 @@ class UserController {
         //检查用户名是否存在
         //所有的对于数据库的操作,我们不在控制器里面完成了,我们在数据库直接封装成一个方法
         const res = (await User.getUserByName(user))[0]
-        console.log(res)
-        console.log(md5(password))
+        // console.log(res)
+        // console.log(md5(password))
         if(res){
             //如果存在
             //检查密码是否正确
