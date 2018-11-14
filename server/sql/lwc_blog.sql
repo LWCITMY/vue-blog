@@ -96,7 +96,7 @@ LOCK TABLES `USER` WRITE;
 
 INSERT INTO `USER` (`id`, `user`, `password`)
 VALUES
-	(1,'admin','e5d2a815230449badccf00bc67436696');
+	(1,'admin','e10adc3949ba59abbe56e057f20f883e');
 
 /*!40000 ALTER TABLE `USER` ENABLE KEYS */;
 UNLOCK TABLES;

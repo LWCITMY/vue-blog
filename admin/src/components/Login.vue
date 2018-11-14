@@ -14,19 +14,22 @@
             <span class="slogan">登登登登...录!
                 <span>/ Login</span>
             </span>
-      <input name="user" v-validate="'required|min:6|max:16|alpha_dash'" type="text" id="user" placeholder="Username" v-model="LoginForm.user">
-      <input name="password" v-validate="'required|min:6|max:11|alpha_num'" type="password" id="password" placeholder="Password" v-model="LoginForm.password" @keyup.enter="login">
+      <input name="user" v-validate="'required'" type="text" id="user" placeholder="Username" v-model="LoginForm.user">
+      <input name="password" v-validate="'required'" type="password" id="password" placeholder="Password" v-model="LoginForm.password" @keyup.enter="login">
       <button id="login" @click="login">登录</button>
     </section>
     <footer>Always.</footer>
     <notifications group="user"></notifications>
-    <notifications group="password"></notifications>
+    <notifications group="admin"></notifications>
   </div>
 </template>
 
 <script>
   //设置验证的提示消息
   import {Validator} from 'vee-validate';
+  //引入设置cookie的方法
+  import {setToken} from "../utils/auth";
+
   const dict = {
     custom:{
       user:{
@@ -60,12 +63,24 @@
               method:'post',
               data:this.LoginForm
             }).then(res=>{
-              console.log(res)
-              //如果用户名密码不正确的话,要给出提示
-
-              //正确后,要先得到token值,将token存到cookie里面
-
-              //跳转到博客系统的首页,也就是.list页面
+              // console.log(res)
+              if (res.success){
+                //正确后,要先得到token值,将token存到cookie里面
+                //跳转到博客系统的首页,也就是.list页面
+                let token = res.token;
+                setToken(token);
+                this.$store.commit('SET_TOKEN',token)
+                this.$router.push('/list')
+              } else {
+                //如果用户名密码不正确的话,要给出提示
+                this.$notify({
+                  type:'error',
+                  group:'admin',
+                  title:'登录失败',
+                  text:res.message
+                })
+                this.LoginForm = {}
+              }
             }).catch(err=>{
               //如果发请求的时候有错误,把错误扔到控制台
               console.log(err)
@@ -75,7 +90,7 @@
               type:'warn',
               group:'user',
               title:'验证失败',
-              text:'hello user!!!!!'
+              text:this.errors.items[0].msg
             })
           }
         }
