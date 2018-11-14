@@ -54,6 +54,12 @@ class UserController {
 
         //最后返回token
     }
+    async logOut(ctx){
+        ctx.body = {
+            success:true,
+            message:'退出成功'
+        }
+    }
 }
 
 export default new UserController()

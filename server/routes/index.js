@@ -2,7 +2,8 @@ import Router from 'koa-router'
 import {base_API} from "../config"
 //引入我们的登录注册控制器
 import UserController from '../Controller/UserController'
-
+//引入验证token合法性的方法
+import checkToken from '../utils/checkToken'
 const router = new Router()
 
 
@@ -15,5 +16,7 @@ router.prefix(`${base_API}`)
 
 //登录
 router.post('/login',UserController.login);
-
+//退出
+//只要是登录后才能看到的内容都需要验证一下token的合法性
+router.get('/logOut',checkToken,UserController.logOut);
 export default router
