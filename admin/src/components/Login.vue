@@ -1,10 +1,10 @@
 <template>
   <!--用svg引入图标-->
-    <!--<div>-->
-      <!--<svg class="icon" aria-hidden="true">-->
-        <!--<use xlink:href="#icon-liebiao"></use>-->
-      <!--</svg>-->
-    <!--</div>-->
+  <!--<div>-->
+  <!--<svg class="icon" aria-hidden="true">-->
+  <!--<use xlink:href="#icon-liebiao"></use>-->
+  <!--</svg>-->
+  <!--</div>-->
   <div class="login-container">
     <header class="login-head">
       <span>lwc博客系统</span>
@@ -15,7 +15,8 @@
                 <span>/ Login</span>
             </span>
       <input name="user" v-validate="'required'" type="text" id="user" placeholder="Username" v-model="LoginForm.user">
-      <input name="password" v-validate="'required'" type="password" id="password" placeholder="Password" v-model="LoginForm.password" @keyup.enter="login">
+      <input name="password" v-validate="'required'" type="password" id="password" placeholder="Password"
+             v-model="LoginForm.password" @keyup.enter="login">
       <button id="login" @click="login">登录</button>
     </section>
     <footer>Always.</footer>
@@ -31,85 +32,87 @@
   import {setToken} from "../utils/auth";
 
   const dict = {
-    custom:{
-      user:{
-        required:'您的用户名不能为空'
+    custom: {
+      user: {
+        required: '您的用户名不能为空'
       },
-      password:{
-        required:() => '您的密码不能为空'
+      password: {
+        required: () => '您的密码不能为空'
       }
     }
   };
-  Validator.localize('en',dict);
+  Validator.localize('en', dict);
   //引入发请求的模块
   import request from '@/utils/request'
-    export default {
-      name: "Login",
-      data(){
-        return{
-          LoginForm:{
-            user:'',
-            password:''
-          }
+
+  export default {
+    name: "Login",
+    data() {
+      return {
+        LoginForm: {
+          user: '',
+          password: ''
         }
-      },
-      methods:{
-        //登录方法
-        login:function () {
-          //首先拿到验证成功失败的结果,如果成功了,在进行登录,如果失败了,则进行消息提示
-          if(this.errors.items.length === 0){
-            request({
-              url:'/login',
-              method:'post',
-              data:this.LoginForm
-            }).then(res=>{
-              // console.log(res)
-              if (res.success){
-                //正确后,要先得到token值,将token存到cookie里面
-                //跳转到博客系统的首页,也就是.list页面
-                let token = res.token;
-                setToken(token);
-                this.$store.commit('SET_TOKEN',token)
-                this.$router.push('/list')
-              } else {
-                //如果用户名密码不正确的话,要给出提示
-                this.$notify({
-                  type:'error',
-                  group:'admin',
-                  title:'登录失败',
-                  text:res.message
-                })
-                this.LoginForm = {}
-              }
-            }).catch(err=>{
-              //如果发请求的时候有错误,把错误扔到控制台
-              console.log(err)
-            })
-          }else{
-            this.$notify({
-              type:'warn',
-              group:'user',
-              title:'验证失败',
-              text:this.errors.items[0].msg
-            })
-          }
+      }
+    },
+    methods: {
+      //登录方法
+      login: function () {
+        //首先拿到验证成功失败的结果,如果成功了,在进行登录,如果失败了,则进行消息提示
+        if (this.errors.items.length === 0) {
+          request({
+            url: '/login',
+            method: 'post',
+            data: this.LoginForm
+          }).then(res => {
+            // console.log(res)
+            if (res.success) {
+              //正确后,要先得到token值,将token存到cookie里面
+              //跳转到博客系统的首页,也就是.list页面
+              let token = res.token;
+              setToken(token);
+              this.$store.commit('SET_TOKEN', token)
+              this.$router.push('/list')
+            } else {
+              //如果用户名密码不正确的话,要给出提示
+              this.$notify({
+                type: 'error',
+                group: 'admin',
+                title: '登录失败',
+                text: res.message
+              })
+              this.LoginForm = {}
+            }
+          }).catch(err => {
+            //如果发请求的时候有错误,把错误扔到控制台
+            console.log(err)
+          })
+        } else {
+          this.$notify({
+            type: 'warn',
+            group: 'user',
+            title: '验证失败',
+            text: this.errors.items[0].msg
+          })
         }
-      },
-      // //钩子函数,当组件加载完毕的时候自动执行
-      // mounted:function () {
-      //   request({
-      //     url:"/index",
-      //     method:'get'
-      //   }).then((res)=>{
-      //     console.log(res);
-      //   })
-      // }
-    }
+      }
+    },
+    // //钩子函数,当组件加载完毕的时候自动执行
+    // mounted:function () {
+    //   request({
+    //     url:"/index",
+    //     method:'get'
+    //   }).then((res)=>{
+    //     console.log(res);
+    //   })
+    // }
+  }
 </script>
 
-<style type="text/scss" lang="scss" scoped>
+<style lang="scss" scoped>
   /*记得引入全局变量的文件*/
   @import "../assets/style/variable";
+
   .login-container {
     height: 100%;
     @include flex($flow: column wrap);
