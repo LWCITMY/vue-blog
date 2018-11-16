@@ -1,14 +1,14 @@
 <template>
   <div class="editor">
-    <input type="text" class="title" id="title">
+    <input type="text" class="title" id="title" v-model="title">
     <div class="operate-bar">
       <section class="tag-container">
         <svg class="icon" aria-hidden="true">
           <use xlink:href="#icon-liebiao"></use>
         </svg>
         <ul class="tags">
-          <li class="tag">
-            标签
+          <li class="tag" v-for="tag,index in getTags" :key="index">
+            {{tag}}
             <sup>x</sup>
           </li>
         </ul>
@@ -25,26 +25,43 @@
       <textarea></textarea>
     </div>
   </div>
-
 </template>
 
 <script>
+  //引入编辑器
   import 'simplemde/dist/simplemde.min.css'
   import SimpleMDE from 'simplemde'
-
+  import {mapState,mapGetters} from 'vuex'
   export default {
     name: "Editor",
     data() {
       return {
-        simplemde: ""
+        simplemde: "", //编辑器
+        // title:"", //文章标题
+        // tags:"", //标签
+        // isPublished:"" //是否发布
       }
+    },
+    //把全局的vuex里面的state和mutations放到计算属性中
+    computed: {
+      ...mapState(['id', 'title', 'content', 'isPublished']),
+      ...mapGetters(['getTags'])
     },
     mounted() {
       this.simplemde = new SimpleMDE({
         placeholder: "Talk to me,what are you say.........",
         spellChecker: false,
         toolbarTips: false
-      })
+      });
+      //将vuex里面的正在编辑的文章的相关信息输出到编辑器
+      // console.log(this.content)
+      this.simplemde.value(this.content);
+    },
+    //监控ID值的变化,如果一旦发生变化,就直接将内容变化
+    watch:{
+      id(newVal,oldVal){
+        this.simplemde.value(this.content);
+      }
     }
   }
 </script>
@@ -97,7 +114,7 @@
           size: 1.6rem;
         }
         color: $special;
-        text-decoration: underline;
+        /*text-decoration: underline;*/
         cursor: pointer;
       }
     }

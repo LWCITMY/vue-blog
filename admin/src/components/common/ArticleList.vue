@@ -2,7 +2,7 @@
   <div>
     <ul class="list">
       <li class="article" :class="{active: activeIndex === index, published: isPublished === 1}"
-          v-for="{title,createTime,isPublished,isChosen},index in articleList">
+          v-for="{title,createTime,isPublished,isChosen},index in articleList" @click="select(index)">
         <header>{{title}}</header>
         <p>{{createTime}}</p>
       </li>
@@ -25,8 +25,7 @@
     },
     //把全局的vuex里面的state和mutations放到计算属性中
     computed: {
-      ...mapState(['id', 'title', 'tags', 'content', 'isPublished']),
-      ...mapMutations(['SET_CURRENT_ARTICLE'])
+      ...mapState(['id', 'title', 'tags', 'content', 'isPublished'])
     },
     //当该组件创建成功的时候自动执行里面的请求
     created() {
@@ -37,7 +36,12 @@
         for (let article of res) {
           article.createTime = moment(article.createTime).format('YYYY年 MM月 DD日 HH:mm:ss')
           article.isChosen = true
-          this.articleList.push(article)
+        }
+        this.articleList.push(...res)
+        //如果查询出文章,则第一篇文章作为正在编辑的文章
+        if(this.articleList.length !== 0){
+          this.SET_CURRENT_ARTICLE(this.articleList[0])
+          this.activeIndex = 0;
         }
       }).catch(err => {
         console.log(err)
@@ -53,10 +57,18 @@
           article.createTime = moment(article.createTime).format('YYYY年 MM月 DD日 HH:mm:ss')
           article.isChosen = true
           this.articleList.unshift(article)
+          //如果发布了新文章的话,当前被选中的文章下标自动+1
+          this.activeIndex ++
         }).catch(err=>{
           console.log(err)
         })
-      }
+      },
+      select(index){
+        this.activeIndex = index
+        //当你在选择文章的时候,将当前被选中的文章扔到全局状态管理里面
+        this.SET_CURRENT_ARTICLE(this.articleList[index])
+      },
+      ...mapMutations(['SET_CURRENT_ARTICLE'])
     }
   }
 </script>
