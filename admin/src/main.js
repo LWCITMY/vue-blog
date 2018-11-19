@@ -14,6 +14,14 @@ import '@/assets/style/index.scss'
 import VeeValidate from 'vee-validate';
 //我们在这里,引入一个消息提示的插件,用来对用户的真实合法性进行验证
 import Notifications from 'vue-notification'
+//引入element-ui
+import ElementUi from 'element-ui'
+//引入element-ui css样式
+import 'element-ui/lib/theme-chalk/index.css'
+//引入默认语言
+import locale from 'element-ui/lib/locale/lang/zh-CN'
+
+Vue.use(ElementUi,{locale})
 
 Vue.use(Notifications)
 

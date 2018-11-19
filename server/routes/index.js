@@ -27,5 +27,7 @@ router.get('/articles',checkToken,ArticleController.getArticles);
 //添加一篇新的文章
 router.post('/article/add',checkToken,ArticleController.addArticle);
 //查询一下最新发布的那篇文章的详细信息
-router.get('/articles/:id',checkToken,ArticleController.getOneArticle)
+router.get('/articles/:id',checkToken,ArticleController.getOneArticle);
+//更新一篇新的文章
+router.post('/articles/update/:id',checkToken,ArticleController.updateArticle);
 export default router

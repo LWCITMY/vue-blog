@@ -1,10 +1,10 @@
 <template>
   <div class="editor">
-    <input type="text" class="title" id="title" v-model="title">
+    <input type="text" class="title" id="title" v-model="title" @input="autosave">
     <div class="operate-bar">
       <section class="tag-container">
         <svg class="icon" aria-hidden="true">
-          <use xlink:href="#icon-liebiao"></use>
+          <use xlink:href="#icon-tag"></use>
         </svg>
         <ul class="tags">
           <li class="tag" v-for="tag,index in getTags" :key="index">
@@ -12,12 +12,16 @@
             <sup>x</sup>
           </li>
         </ul>
-        <input type="text" class="tag-input" id="tag-input">
+        <input type="text" class="tag-input" id="tag-input" @change="autosave">
         <span class="tag-add">+</span>
       </section>
-      <section class="btn-container">
-        <button id="delete" class="delete">删除文章</button>
-        <button id="submit" class="not-del">发布文章</button>
+      <section class="btn-container-link">
+        <!--<button id="delete" class="delete">删除文章</button>-->
+        <!--<button id="submit" class="not-del">发布文章</button>-->
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-fabu"></use>
+          </svg>
+          <p class="descript">发布</p>
       </section>
     </div>
     <p class="tips">标签查询页面只能批量更改标签，修改的文章内容会自动保存</p>
@@ -32,20 +36,32 @@
   import 'simplemde/dist/simplemde.min.css'
   import SimpleMDE from 'simplemde'
   import {mapState,mapGetters} from 'vuex'
+  //引入debounce方法
+  import debounce from 'lodash.debounce'
   export default {
     name: "Editor",
     data() {
       return {
         simplemde: "", //编辑器
+        // tags:"" //标签
         // title:"", //文章标题
-        // tags:"", //标签
         // isPublished:"" //是否发布
       }
     },
     //把全局的vuex里面的state和mutations放到计算属性中
     computed: {
-      ...mapState(['id', 'title', 'content', 'isPublished']),
-      ...mapGetters(['getTags'])
+      ...mapState(['id','tags', 'content', 'isPublished']),
+      ...mapGetters(['getTags']),
+      //因为这个title是数据双向绑定的,因此,他可能会被改变,如果我么你直接mapState中读取他的家话
+      //那么如果改变title的话,又因为他没有setter的方法,就会导致无法直接该百年state中的title
+      title:{
+        get(){
+          return this.$store.state.title
+        },
+        set(value){
+          this.$store.commit('SET_TITLE',value)
+        }
+      }
     },
     mounted() {
       this.simplemde = new SimpleMDE({
@@ -56,12 +72,29 @@
       //将vuex里面的正在编辑的文章的相关信息输出到编辑器
       // console.log(this.content)
       this.simplemde.value(this.content);
+      //绑定编辑器的按键事件以及复制粘帖的事件发生
+      this.simplemde.codemirror.on('keyHandler',()=>this.autosave())
+      this.simplemde.codemirror.on('inputRead',()=>this.autosave())
     },
     //监控ID值的变化,如果一旦发生变化,就直接将内容变化
     watch:{
       id(newVal,oldVal){
         this.simplemde.value(this.content);
       }
+    },
+    methods:{
+      //避免发请求的次数过多...
+      autosave:debounce(function () {
+        if(this.id){
+          this.$store.dispatch('saveArticle',{
+            id:this.id,
+            title:this.title,
+            tags:this.tags,
+            content:this.simplemde.value(),
+            isPublished:this.isPublished
+          })
+        }
+      },1000)
     }
   }
 </script>
@@ -127,5 +160,31 @@
 
   .content {
     font-size: 1.6rem;
+  }
+
+  .btn-container-link {
+    @include flex($flow: row wrap);
+    -webkit-justify-content: flex-end;
+    justify-content: flex-end;
+    margin-right: 3em;
+    .icon {
+      fill: $special;
+      width: 2.5em;
+      height: 2.5em;
+    }
+    .descript {
+      color: $special;
+      font-size: 1.5rem;
+      margin-top: 10px;
+    }
+    &:hover{
+      cursor: pointer;
+    }
+    &:hover > .icon {
+      fill: $base;
+    }
+    &:hover > .descript {
+      color: $base;
+    }
   }
 </style>

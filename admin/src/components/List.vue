@@ -9,8 +9,12 @@
       <hr>
       <main>
         <div class="article-list">
-          <section class="btn-container">
-            <button id="add" class="not-del" @click="AddArticle">新文章</button>
+          <section class="btn-container-link" @click="AddArticle">
+            <!--<button id="add" class="not-del" @click="AddArticle">新文章</button>-->
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-xinjian"></use>
+            </svg>
+            <p class="descript">新建文章</p>
           </section>
           <!--文章列表的组件-->
           <article-list ref="articleList"></article-list>
@@ -91,4 +95,28 @@
     overflow: auto;
   }
 
+  .btn-container-link {
+    @include flex($flow: row wrap);
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+    margin-left: 3em;
+    width: 8em;
+    .icon {
+      width: 1.7em;
+      height: 1.7em;
+    }
+    .descript {
+      padding-left: 0.3em;
+      font-size: 1.5rem;
+    }
+    &:hover{
+      cursor: pointer;
+    }
+    &:hover > .icon {
+      fill: $base;
+    }
+    &:hover > .descript {
+      color: $base;
+    }
+  }
 </style>

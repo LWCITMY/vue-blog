@@ -3,8 +3,17 @@
     <ul class="list">
       <li class="article" :class="{active: activeIndex === index, published: isPublished === 1}"
           v-for="{title,createTime,isPublished,isChosen},index in articleList" @click="select(index)">
-        <header>{{title}}</header>
-        <p>{{createTime}}</p>
+        <div class="article-right">
+          <section>
+            <header>{{title}}</header>
+            <p>{{createTime}}</p>
+          </section>
+          <section>
+              <svg class="icon" aria-hidden="true" >
+                <use xlink:href="#icon-shezhi"></use>
+              </svg>
+          </section>
+        </div>
       </li>
     </ul>
   </div>
@@ -69,6 +78,29 @@
         this.SET_CURRENT_ARTICLE(this.articleList[index])
       },
       ...mapMutations(['SET_CURRENT_ARTICLE'])
+    },
+    //监听vuex数据的变化,如果发生变化,更新articleList数据
+    watch:{
+      title(val){
+        if(this.articleList.length !== 0){
+          this.articleList[this.activeIndex].title = val
+        }
+      },
+      tags(val){
+        if(this.articleList.length !== 0){
+          this.articleList[this.activeIndex].tags = val
+        }
+      },
+      content(val){
+        if(this.articleList.length !== 0){
+          this.articleList[this.activeIndex].content = val
+        }
+      },
+      isPublished(val){
+        if(this.articleList.length !== 0){
+          this.articleList[this.activeIndex].isPublished = val
+        }
+      }
     }
   }
 </script>
@@ -79,35 +111,43 @@
 
   .article {
     @include flex($flow: column wrap, $align: flex-start);
-    padding: 0.2em 0.5em;
-    margin-bottom: 1.5em;
-    height: 5em;
+    padding: 0em 3em;
+    height: 7em;
     max-width: 100%;
     background: $white;
-    border: 0.1em solid $special;
+    border: 0.1em solid #d9d9d9;
     cursor: pointer;
-    header {
-      max-width: 100%;
-      font-size: 1.3rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-bottom: 0.2em;
-    }
-    p {
-      margin: 0;
-      color: $special;
-    }
-    &:last-child {
-      margin-bottom: 0;
+    .article-right{
+      @include flex($justify: space-between);
+      width: 100%;
+      header {
+        max-width: 100%;
+        font-size: 1.6rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 0.5em;
+      }
+      p {
+        margin: 0;
+        font-size: 1.5rem;
+        color: $special;
+      }
+      .icon {
+        width: 1.5em;
+        height: 1.5em;
+      }
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 
   .active {
-    border: 1px solid $base;
+    background-color: #e6e6e6;
   }
 
   .published {
-    border-right: 4px solid $base;
+    border-left: 4px solid $base;
   }
 </style>
