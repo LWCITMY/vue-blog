@@ -17,7 +17,7 @@ const mutations = {
     state.tags = tags
   },
   //设置改变内容的方法
-  SET_CONTRNT:(state,content)=>{
+  SET_CONTENT:(state,content)=>{
     state.content = content
   },
   //设置当前正在编辑的文章,将它存放到vex中
