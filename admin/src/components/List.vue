@@ -9,7 +9,7 @@
       <hr>
       <main>
         <div class="article-list">
-          <section class="btn-container-link" @click="AddArticle">
+          <section class="btn-container" @click="AddArticle">
             <!--<button id="add" class="not-del" @click="AddArticle">新文章</button>-->
             <svg class="icon" aria-hidden="true">
               <use xlink:href="#icon-xinjian"></use>
@@ -62,6 +62,11 @@
           console.log(err)
         })
       }
+    },
+    computed: {
+      title() {
+        return this.$store.state.title
+      }
     }
   }
 </script>
@@ -95,12 +100,13 @@
     overflow: auto;
   }
 
-  .btn-container-link {
+  .btn-container {
     @include flex($flow: row wrap);
     -webkit-justify-content: flex-start;
     justify-content: flex-start;
     margin-left: 3em;
     width: 8em;
+    color: #595959!important;
     .icon {
       width: 1.7em;
       height: 1.7em;

@@ -15,16 +15,15 @@
         <input v-if="showTags" type="text" class="tag-input" id="tag-input" @keydown.enter="addTag" >
         <span v-else class="tag-add" @click="addTag">+</span>
       </section>
-      <button id="delete" class="delete">删除文章</button>
-      <section class="btn-container-link">
-        <!--<button id="submit" class="not-del">发布文章</button>-->
+      <!--<button id="delete" class="delete" @click="deleteArticle">删除文章</button>-->
+      <section class="btn-container-link" @click="publishArticle">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-fabu"></use>
           </svg>
           <p class="descript">发布</p>
       </section>
     </div>
-    <p class="tips">标签查询页面只能批量更改标签，修改的文章内容会自动保存</p>
+    <p class="tips" v-if="$route.path !== '/list'">标签查询页面只能批量更改标签，修改的文章内容会自动保存</p>
     <div class="content">
       <textarea></textarea>
     </div>
@@ -38,6 +37,8 @@
   import {mapState,mapGetters} from 'vuex'
   //引入debounce方法
   import debounce from 'lodash.debounce'
+  //引入request
+  import request from '@/utils/request'
   export default {
     name: "Editor",
     data() {
@@ -95,7 +96,7 @@
             isPublished:this.isPublished
           })
         }
-      },500),
+      },1000),
       //删除标签
       deleteTag(index){
         this.getTags.splice(index,1)
@@ -105,13 +106,42 @@
       addTag(){
         if (this.showTags){
           const newTag = document.querySelector('#tag-input').value
-          this.getTags.push(newTag)
-          //每次按下enter键的时候
-          this.autosave();
+          if(newTag && this.getTags.indexOf(newTag) === -1){
+            this.getTags.push(newTag)
+            //每次按下enter键的时候
+            this.autosave();
+          }
         }
         //只是一个单纯的切换功能,第一次点击+的时候显示input表单,第二次
         //input表单中输入内容按下enter键就能隐藏表单了
         this.showTags = !this.showTags
+      },
+      // //删除文章
+      // deleteArticle(){
+      //   request({
+      //     url:`/articles/${this.id}`,
+      //     method:'delete',
+      //     data:{}
+      //   }).then(res=>{
+      //     //删除之后更新视图,让视图中的文章也删除
+      //     this.$store.commit('SET_DELETE_ARTICLE')
+      //   }).catch(err=>{
+      //     console.log(err)
+      //   })
+      // },
+      //发布文章
+      publishArticle(){
+        if (!this.isPublished){
+          request({
+            url:`/articles/publish/${this.id}`,
+            method:'put',
+            data:{}
+          }).then(res=>{
+            this.$store.commit('SET_PUBLISH_ARTICLE')
+          }).catch(err=>{
+            console.log(err)
+          })
+        }
       }
     }
   }
@@ -186,12 +216,10 @@
     justify-content: flex-end;
     margin-right: 3em;
     .icon {
-      fill: $special;
       width: 2.5em;
       height: 2.5em;
     }
     .descript {
-      color: $special;
       font-size: 1.5rem;
       margin-top: 10px;
     }
