@@ -120,7 +120,7 @@
           for (let [index, article] of this.articleList.entries()) {
             if (article.isChosen) {
               this.activeIndex = index
-              this.updateArticle(this.articleList[this.activeIndex])
+              this.SET_CURRENT_ARTICLE(this.articleList[this.activeIndex])
               break
             }
           }
@@ -153,7 +153,7 @@
           }
         }
         // 防止更改了activeIndex的article，所以提交一个mutation
-        this.updateArticle(this.articleList[this.activeIndex])
+        this.SET_CURRENT_ARTICLE(this.articleList[this.activeIndex])
       },
       deleteSpecArticleTag(tag, i) {
         const article = this.articleList[i]
@@ -176,9 +176,8 @@
             const index = tags.indexOf(tag)
             if (index !== -1) {
               if (tags.length === 1 && article.isPublished === 1) {
-                console.error('已发布文章请至少保持一个tag!')
-              }
-              else {
+                alert('已发布文章请至少保持一个tag!')
+              } else {
                 tags.splice(index, 1)
                 article.tags = tags.join(',')
                 request({
@@ -193,7 +192,7 @@
           }
         }
         // 防止更改了activeIndex的article，所以提交一个mutation
-        this.updateArticle(this.articleList[this.activeIndex])
+        this.SET_CURRENT_ARTICLE(this.articleList[this.activeIndex])
       },
       yincang(){
         this.show5 = !this.show5
@@ -204,7 +203,6 @@
         // this.show5 = false
         //当你在选择文章的时候,将当前被选中的文章扔到全局状态管理里面
         this.SET_CURRENT_ARTICLE(this.articleList[index])
-        console.log('bb' + this.show5)
       },
       ...mapMutations(['SET_CURRENT_ARTICLE']),
       //删除文章

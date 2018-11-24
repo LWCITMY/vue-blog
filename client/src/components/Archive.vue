@@ -47,7 +47,9 @@ export default {
           intro.publishTime = moment(intro.publishTime).format('MM-DD')
           this.introductions[introYear].push(intro)
         }
-      }).catch(err => alert(err))
+      }).catch(err => {
+        console.log(err)
+      })
     }
 }
 </script>

@@ -55,7 +55,9 @@ export default {
             this.introductions[tag].push(intro)
           }
         }
-      }).catch(err => alert(err))
+      }).catch(err => {
+        console.log(err)
+      })
     },
     methods: {
         goAnchor(id) {

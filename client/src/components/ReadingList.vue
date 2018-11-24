@@ -42,7 +42,9 @@ export default {
         method:'get'
       }).then(res => {
         this.books = res
-      }).catch(err => alert(err))
+      }).catch(err => {
+        console.log(err)
+      })
     }
 }
 </script>

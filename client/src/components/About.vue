@@ -25,7 +25,9 @@ export default {
         method:'get'
       }).then(res =>{
         this.about = res[0].content
-      }).catch(err => alert(err))
+      }).catch(err => {
+        console.log(err)
+      })
     }
 }
 </script>

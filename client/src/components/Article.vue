@@ -42,7 +42,9 @@ export default {
         this.publishTime = moment(data.publishTime).format('YYYY年 MMM DD日 HH:mm:ss')
         this.content = data.content
         this.tags = data.tags ? data.tags.split(',') : []
-      }).catch(err => alert(err))
+      }).catch(err => {
+        console.log(err)
+      })
     }
 }
 </script>

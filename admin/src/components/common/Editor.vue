@@ -2,7 +2,7 @@
   <div class="editor">
     <input type="text" class="title" id="title" v-model="title" @input="autosave">
     <div class="operate-bar">
-      <section class="tag-container">
+      <section class="tag-container" v-if="$route.path == '/list'">
         <svg class="icon" aria-hidden="true">
           <use xlink:href="#icon-tag"></use>
         </svg>

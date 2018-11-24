@@ -2,9 +2,7 @@
  * @author
  * @file 转义输入的字符
  */
-
 import mysql from 'mysql'
-
 export default function escape(template, ...subs) {
     let result = ''
     for (let i = 0; i < subs.length; i++) {

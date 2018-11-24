@@ -1,16 +1,17 @@
 import koa from 'koa'
-import Router from 'koa-router'
-//跨域
 import cors from 'koa-cors'
 import bodyParser from 'koa-bodyparser'
-//引入路由文件
+//路由文件
 import router from './routes/index'
-//连接数据库
+//数据库连接文件
 import query from './utils/query'
 
 const app = new koa()
-app.use(cors()).use(bodyParser()).use(router.routes())
+
+app.use(cors())
+app.use(bodyParser())
+app.use(router.routes())
 
 app.listen(3000,()=>{
-    console.log('node is ok')
+    console.log('node is OK')
 })

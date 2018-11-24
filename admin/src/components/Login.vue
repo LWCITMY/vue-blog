@@ -1,10 +1,4 @@
 <template>
-  <!--用svg引入图标-->
-  <!--<div>-->
-  <!--<svg class="icon" aria-hidden="true">-->
-  <!--<use xlink:href="#icon-liebiao"></use>-->
-  <!--</svg>-->
-  <!--</div>-->
   <div class="login-container">
     <el-form ref="LoginForm" :model="LoginForm"  class="login-form" auto-complete="on" label-position="left">
       <h3 class="title">博客交流系统</h3>
@@ -124,15 +118,6 @@
         }
       }
     }
-    // //钩子函数,当组件加载完毕的时候自动执行
-    // mounted:function () {
-    //   request({
-    //     url:"/index",
-    //     method:'get'
-    //   }).then((res)=>{
-    //     console.log(res);
-    //   })
-    // }
   }
 </script>
 

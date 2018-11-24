@@ -2,12 +2,455 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>博客</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>client</title>
+    <title>个人博客</title>
+    <style>
+      #app{
+        position: relative;
+      }
+
+      .page-thunder-to-text {
+        position: relative;
+        overflow: hidden;
+      }
+      .page-thunder-to-text canvas {
+        display: block;
+        /*z-index: 888;*/
+        /*position: absolute;*/
+        width: 100%;
+      }
+      .page-thunder-to-text input {
+        position: absolute;
+        bottom: 200px;
+        left: 0;
+        right: 0;
+        display: block;
+        outline: none;
+        background-color: rgba(38, 50, 56, 0.2);
+        color: #ffffff;
+        border: none;
+        width: 50%;
+        min-width: 500px;
+        max-width: 100%;
+        margin: auto;
+        height: 60px;
+        line-height: 60px;
+        font-size: 40px;
+        padding: 0 20px;
+        z-index: 888;
+      }
+      .page-thunder-to-text input:hover, .page-thunder-to-text input:focus {
+        border: 1px solid rgba(38, 50, 56, 0.6);
+      }
+      .page-thunder-to-text input::-webkit-input-placeholder {
+        color: rgba(255, 255, 255, 0.1);
+      }
+
+    </style>
   </head>
   <body>
+
     <div id="app"></div>
-    <!-- built files will be auto injected -->
+    <div class="page page-thunder-to-text">
+      <input id="input" type="text" maxlength="24" placeholder="I love you!">
+      <canvas id="canvas"></canvas>
+    </div>
   </body>
 </html>
+<script>
+  (function(window, document) {
+
+    var Vector2 = (function() {
+      function Vector2(x, y) {
+        this.x = x || 0;
+        this.y = y || 0;
+      }
+      return Vector2;
+    })();
+
+    Vector2.prototype.add = function(addend) {
+      this.x += addend.x;
+      this.y += addend.y;
+    };
+
+    var RainDrop = (function() {
+      function RainDrop(parent) {
+        this.size = 2;
+        this.parent = parent;
+        this.init();
+      }
+      return RainDrop;
+    })();
+
+    RainDrop.prototype.init = function() {
+      this.life = 0;
+      this.ttl = Math.random() * 500 + 300;
+      this.position = new Vector2(Math.random() * window.innerWidth, 0);
+      this.velocity = new Vector2(0.5 - Math.random() * 1, Math.random() * 1 + 0.2);
+      this.terminalVelocity = 8;
+    };
+
+    RainDrop.prototype.update = function() {
+      if (this.position.x > window.innerWidth || this.position.x < -this.size || this.life > this.ttl) this.init();
+      if (this.position.y > this.parent.floor) {
+        this.position.y = this.parent.floor - this.size;
+        this.velocity.y *= -0.2 - Math.random() * 0.3;
+      }
+      this.life++;
+      this.position.add(this.velocity);
+      this.velocity.y += 0.1;
+    }
+
+    var Rain = (function() {
+      function Rain(args) {
+        this.props = args;
+        this.rainDrops = [];
+        this.init();
+      }
+      return Rain;
+    })();
+
+    Rain.prototype.init = function() {
+      this.createCanvas();
+      this.resize();
+      this.loop();
+    };
+
+    Rain.prototype.resize = function() {
+
+      var attr = 'position: absolute; z-index: 0; top: 0; left: 0; height: 100vh; width: 100vw;';
+
+      this.canvas.setAttribute('style', attr);
+
+      this.dimensions = {
+        width: window.innerWidth,
+        height: window.innerHeight
+      };
+
+      this.canvas.width = this.dimensions.width;
+      this.canvas.height = this.dimensions.height;
+      this.floor = this.dimensions.height * 0.7;
+    };
+
+    Rain.prototype.createCanvas = function() {
+      this.canvas = document.createElement('canvas');
+
+      this.ctx = this.canvas.getContext('2d');
+
+      document.body.appendChild(this.canvas);
+    };
+
+    Rain.prototype.draw = function() {
+      this.ctx.fillStyle = this.props.backgroundColor;
+      this.ctx.fillRect(0, 0, this.dimensions.width, this.floor);
+      for (var i = 0, len = this.rainDrops.length; i < len; i++) {
+        var rainDrop = this.rainDrops[i];
+        rainDrop.update();
+        this.ctx.fillStyle = this.props.rainColor;
+        this.ctx.fillRect(rainDrop.position.x, rainDrop.position.y, rainDrop.size, rainDrop.size);
+      }
+      this.reflect();
+    };
+
+    Rain.prototype.reflect = function() {
+      var grad = this.ctx.createLinearGradient(this.dimensions.width / 2, this.floor * 0.6, this.dimensions.width / 2, this.floor);
+      grad.addColorStop(0, 'rgba(80,90,100,1)');
+      grad.addColorStop(1, 'rgba(80,90,100,0)');
+      this.ctx.save();
+      this.ctx.scale(1, -1);
+      this.ctx.translate(0, this.floor * -2);
+      this.ctx.filter = 'blur(3px) saturate(150%)';
+      this.ctx.drawImage(this.canvas, 0, 0, this.dimensions.width, this.floor, 0, 0, this.dimensions.width, this.floor);
+      this.ctx.fillStyle = grad;
+      this.ctx.fillRect(0, 0, this.dimensions.width, this.floor);
+      this.ctx.restore();
+    };
+
+    Rain.prototype.loop = function() {
+      var timeout, self = this;
+      if (self.rainDrops.length < self.props.rainDropCount) {
+        timeout = window.setTimeout(function() {
+          self.rainDrops.push(new RainDrop(self));
+        }, Math.random() * 200);
+      } else if (timeout) {
+        timeout = null;
+        window.clearTimeout(timeout);
+      }
+      self.draw();
+      window.requestAnimationFrame(self.loop.bind(self));
+    };
+
+    window.onload = function() {
+      var args = {
+        rainDropCount: 500,
+        rainColor: 'rgba(150,180,255,0.8)',
+        backgroundColor: 'rgba(10,10,10,0.5)'
+      };
+
+      var rain = new Rain(args);
+
+      window.onresize = function() {
+        rain.resize();
+      };
+    };
+
+    window.requestAnimationFrame = (function() {
+      return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function(callback) {
+          window.setTimeout(callback, 1000 / 60);
+        };
+    })();
+
+  })(this, document);
+
+
+
+
+
+
+
+  let canvas, ctx, w, h, thunder, text, particles, input;
+
+  function Thunder(options) {
+    options = options || {};
+    this.lifespan = options.lifespan || Math.round(Math.random() * 10 + 10);
+    this.maxlife = this.lifespan;
+    this.color = options.color || '#fefefe';
+    this.glow = options.glow || '#2323fe';
+    this.x = options.x || Math.random() * w;
+    this.y = options.y || Math.random() * h;
+    this.width = options.width || 2;
+    this.direct = options.direct || Math.random() * Math.PI * 2;
+    this.max = options.max || Math.round(Math.random() * 10 + 20);
+    this.segments = [...new Array(this.max)].map(() => {
+      return {
+        direct: this.direct + (Math.PI * Math.random() * 0.2 - 0.1),
+        length: Math.random() * 20 + 80,
+        change: Math.random() * 0.04 - 0.02
+      };
+    });
+
+    this.update = function(index, array) {
+      this.segments.forEach(s => { (s.direct += s.change) && Math.random() > 0.96 && (s.change *= -1) });
+      (this.lifespan > 0 && this.lifespan--) || this.remove(index, array);
+    }
+
+    this.render = function(ctx) {
+      if (this.lifespan <= 0) return;
+      ctx.beginPath();
+      ctx.globalAlpha = this.lifespan / this.maxlife;
+      ctx.strokeStyle = this.color;
+      ctx.lineWidth = this.width;
+      ctx.shadowBlur = 32;
+      ctx.shadowColor = this.glow;
+      ctx.moveTo(this.x, this.y);
+      let prev = { x: this.x, y: this.y };
+      this.segments.forEach(s => {
+        const x = prev.x + Math.cos(s.direct) * s.length;
+        const y = prev.y + Math.sin(s.direct) * s.length;
+        prev = { x: x, y: y };
+        ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.closePath();
+      ctx.shadowBlur = 0;
+      const strength = Math.random() * 80 + 40;
+      const light = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, strength);
+      light.addColorStop(0, 'rgba(250, 200, 50, 0.6)');
+      light.addColorStop(0.1, 'rgba(250, 200, 50, 0.2)');
+      light.addColorStop(0.4, 'rgba(250, 200, 50, 0.06)');
+      light.addColorStop(0.65, 'rgba(250, 200, 50, 0.01)');
+      light.addColorStop(0.8, 'rgba(250, 200, 50, 0)');
+      ctx.beginPath();
+      ctx.fillStyle = light;
+      ctx.arc(this.x, this.y, strength, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    this.remove = function(index, array) {
+      array.splice(index, 1);
+    }
+  }
+
+  function Spark(options) {
+    options = options || {};
+    this.x = options.x || w * 0.5;
+    this.y = options.y || h * 0.5;
+    this.v = options.v || { direct: Math.random() * Math.PI * 2, weight: Math.random() * 14 + 2, friction: 0.88 };
+    this.a = options.a || { change: Math.random() * 0.4 - 0.2, min: this.v.direct - Math.PI * 0.4, max: this.v.direct + Math.PI * 0.4 };
+    this.g = options.g || { direct: Math.PI * 0.5 + (Math.random() * 0.4 - 0.2), weight: Math.random() * 0.25 + 0.25 };
+    this.width = options.width || Math.random() * 3;
+    this.lifespan = options.lifespan || Math.round(Math.random() * 20 + 40);
+    this.maxlife = this.lifespan;
+    this.color = options.color || '#feca32';
+    this.prev = { x: this.x, y: this.y };
+
+    this.update = function(index, array) {
+      this.prev = { x: this.x, y: this.y };
+      this.x += Math.cos(this.v.direct) * this.v.weight;
+      this.x += Math.cos(this.g.direct) * this.g.weight;
+      this.y += Math.sin(this.v.direct) * this.v.weight;
+      this.y += Math.sin(this.g.direct) * this.g.weight;
+      this.v.weight > 0.2 && (this.v.weight *= this.v.friction);
+      this.v.direct += this.a.change;
+      (this.v.direct > this.a.max || this.v.direct < this.a.min) && (this.a.change *= -1);
+      this.lifespan > 0 && this.lifespan--;
+      this.lifespan <= 0 && this.remove(index, array);
+    }
+
+    this.render = function(ctx) {
+      if (this.lifespan <= 0) return;
+      ctx.beginPath();
+      ctx.globalAlpha = this.lifespan / this.maxlife;
+      ctx.strokeStyle = this.color;
+      ctx.lineWidth = this.width;
+      ctx.moveTo(this.x, this.y);
+      ctx.lineTo(this.prev.x, this.prev.y);
+      ctx.stroke();
+      ctx.closePath();
+    }
+
+    this.remove = function(index, array) {
+      array.splice(index, 1);
+    }
+  }
+
+  function Particles(options) {
+    options = options || {};
+    this.max = options.max || Math.round(Math.random() * 10 + 10);
+    this.sparks = [...new Array(this.max)].map(() => new Spark(options));
+
+    this.update = function() {
+      this.sparks.forEach((s, i) => s.update(i, this.sparks));
+    }
+
+    this.render = function(ctx) {
+      this.sparks.forEach(s => s.render(ctx));
+    }
+  }
+
+  function Text(options) {
+    options = options || {};
+    const pool = document.createElement('canvas');
+    const buffer = pool.getContext('2d');
+    pool.width = w;
+    buffer.fillStyle = '#000000';
+    buffer.fillRect(0, 0, pool.width, pool.height);
+
+    this.size = options.size || 100;
+    this.copy = (options.copy || `Hello!`) + ' ';
+    this.color = options.color || '#cd96fe';
+    this.delay = options.delay || 5;
+    this.basedelay = this.delay;
+    buffer.font = `${this.size}px Comic Sans MS`;
+    this.bound = buffer.measureText(this.copy);
+    this.bound.height = this.size * 1.5;
+    this.x = options.x || w * 0.5 - this.bound.width * 0.5;
+    this.y = options.y || h * 0.5 - this.size * 0.5;
+
+    buffer.strokeStyle = this.color;
+    buffer.strokeText(this.copy, 0, this.bound.height * 0.8);
+    this.data = buffer.getImageData(0, 0, this.bound.width, this.bound.height);
+    this.index = 0;
+
+    this.update = function() {
+      if (this.index >= this.bound.width) {
+        this.index = 0;
+        return;
+      }
+      const data = this.data.data;
+      for (let i = this.index * 4; i < data.length; i += (4 * this.data.width)) {
+        const bitmap = data[i] + data[i + 1] + data[i + 2] + data[i + 3];
+        if (bitmap > 255 && Math.random() > 0.96) {
+          const x = this.x + this.index;
+          const y = this.y + (i / this.bound.width / 4);
+          thunder.push(new Thunder({
+            x: x,
+            y: y
+          }));
+          Math.random() > 0.5 && particles.push(new Particles({
+            x: x,
+            y: y
+          }));
+        }
+      }
+      if (this.delay-- < 0) {
+        this.index++;
+        this.delay += this.basedelay;
+      }
+    }
+
+    this.render = function(ctx) {
+      ctx.putImageData(this.data, this.x, this.y, 0, 0, this.index, this.bound.height);
+    }
+  }
+
+  function loop() {
+    update();
+    render();
+    requestAnimationFrame(loop);
+  }
+
+  function update() {
+    text.update();
+    thunder.forEach((l, i) => l.update(i, thunder));
+    particles.forEach(p => p.update());
+  }
+
+  function render() {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, w, h);
+    //
+    ctx.globalCompositeOperation = 'screen';
+    text.render(ctx);
+    thunder.forEach(l => l.render(ctx));
+    particles.forEach(p => p.render(ctx));
+  }
+
+  (function () {
+    //
+    canvas = document.getElementById('canvas');
+    input = document.getElementById('input');
+    ctx = canvas.getContext('2d');
+    w = window.innerWidth;
+    h = window.innerHeight;
+    canvas.width = w;
+    canvas.height = h;
+    thunder = [];
+    particles = [];
+    //
+    text = new Text({
+      copy: 'Anh Yêu Em!'
+    });
+    canvas.addEventListener('click', (e) => {
+      const x = e.clientX;
+      const y = e.clientY;
+      thunder.push(new Thunder({
+        x: x,
+        y: y
+      }));
+      particles.push(new Particles({
+        x: x,
+        y: y
+      }));
+    });
+    let cb = 0;
+    input.addEventListener('keyup', (e) => {
+      clearTimeout(cb);
+      cb = setTimeout(() => {
+        text = new Text({
+          copy: input.value
+        });
+      }, 300);
+    });
+    //
+    loop();
+  })()
+</script>

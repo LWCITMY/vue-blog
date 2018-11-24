@@ -22,7 +22,7 @@
    * @author
    * @file 关于我的后台管理组件
    * */
-
+  import 'font-awesome/css/font-awesome.min.css'
   import 'simplemde/dist/simplemde.min.css'
   import SimpleMDE from 'simplemde'
   import request from '@/utils/request'

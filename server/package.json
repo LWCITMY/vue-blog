@@ -12,7 +12,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "fs": "0.0.1-security",
     "jsonwebtoken": "^8.3.0",
     "koa": "^2.6.1",
     "koa-bodyparser": "^4.2.1",

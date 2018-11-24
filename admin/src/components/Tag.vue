@@ -15,7 +15,7 @@
               <li class="tag" :class="{chosen: chosenTags.indexOf(tag) > -1}" v-for="tag,index in tags" :key="tag">{{ tag }}</li>
             </ul>
           </section>
-          <section class="chosen-tag" v-show="chosenTags.length">
+          <section class="chosen-tag" v-show="chosenTags.length" v-if="showTags">
             <h5>修改标签</h5>
             <ul class="tags">
               <li class="tag-edit" v-for="tag,index in chosenTags">
@@ -53,8 +53,26 @@
     data() {
       return {
         tags: [],
-        chosenTags: []
+        chosenTags: [],
+        showTags:true
       }
+    },
+    created(){
+      request({
+        url:'/tags',
+        method:'get'
+      }).then(res=>{
+        for (var a = 0;a<res.length;a++){
+          if(res[a].TAGS == ''){
+          }else{
+            res[a].TAGS = res[a].TAGS.split(',')
+            this.tags =this.tags.concat(res[a].TAGS)
+            this.tags = Array.from(new Set(this.tags))
+          }
+        }
+      }).catch(err=>{
+        console.log(err)
+      })
     },
     methods: {
       chooseTag(evt) {
@@ -68,6 +86,7 @@
           }
           this.$refs.articleList.updateListByTags(this.chosenTags)
         }
+        this.showTags=true
       },
       getTags(tags) {
         this.tags.push(...tags)
@@ -91,6 +110,7 @@
           this.tags.splice(tagIndex, 1, newVal)
         }
         this.$refs.articleList.updateArticleTag(oldVal, newVal, this.chosenTags)
+        this.showTags = !this.showTags
       },
       deleteTag(tag, i) {
         const tagIndex = this.tags.indexOf(tag)
@@ -100,6 +120,7 @@
         this.$refs.articleList.updateListByTags(this.chosenTags)
         // 删除文章中的tag
         this.$refs.articleList.deleteArticleTag(tag)
+        this.showTags = false
       }
     }
   }

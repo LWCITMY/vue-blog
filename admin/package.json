@@ -1,7 +1,7 @@
 {
   "name": "admin",
   "version": "1.0.0",
-  "description": "A Vue.js project",
+  "description": "blog-system",
   "author": "liwencheng <350718011@qq.com>",
   "private": true,
   "scripts": {
@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "element-ui": "^2.4.9",
+    "element-ui": "^2.4.11",
+    "font-awesome": "^4.7.0",
     "js-cookie": "^2.2.0",
     "lodash": "^4.17.11",
     "moment": "^2.22.2",

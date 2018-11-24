@@ -49,7 +49,7 @@
       //发表文章的方法
       AddArticle() {
         request({
-          url:'/article/add',
+          url:'/articles/add',
           method:'post',
           data:{}
         }).then(res=>{
