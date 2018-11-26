@@ -30,11 +30,11 @@ router.post('/login',UserController.login)
 //只要是登录后才能看到的内容都需要验证一下token的合法性.
 router.get('/logOut',checkToken,UserController.logout)
 //获取所有的文章
-router.get('/articles',checkToken,ArticleController.getArticles)
+router.get('/articles',ArticleController.getArticles)
 //添加一篇新的文章
 router.post('/articles/add',checkToken,ArticleController.addArticle)
 //查询一下最新发布的那片文章的详细信息
-router.get('/articles/:id',checkToken,ArticleController.getOneArticle)
+router.get('/articles/:id',ArticleController.getOneArticle)
 //更新一篇新的文章
 router.post('/articles/update/:id',checkToken,ArticleController.updateArticle)
 //删除一篇文章
