@@ -1,26 +1,19 @@
 <template>
     <div class="articlelist-container">
-        <div class="article-list">
-            <article v-for="{id, title, publishTime, content} in articles" :key="id">
-                <header>
-                    <h2>
-                        <router-link class="title" :to="'/articles/' + id">{{ title }}</router-link>
-                    </h2>
-                    <h4 class="time">{{ publishTime }}</h4>
-                </header>
-                <p class="abstract" v-html="content"></p>
-                <footer>
-                    <router-link class="read-more" :to="'/articles/' + id">... continue reading</router-link>
-                </footer>
-            </article>
-        </div>
-        <div class="pagination">
-            <span class="prev" :class="{'hide': parseInt(this.$route.query.page, 10) === 0}">←
-                <a @click="prevPage">上一页</a>
-            </span>
-            <span class="next" :class="{'hide': parseInt(this.$route.query.page, 10) === this.maxPage - 1}">
-                <a @click="nextPage">下一页</a>→</span>
-        </div>
+      <div class="article-list">
+        <article v-for="{id, title, publishTime, content} in articles" :key="id">
+          <header>
+            <h2>
+              <router-link class="title" :to="'/articles/' + id">标题:{{ title }}</router-link>
+            </h2>
+            <h4 class="time">发布时间:{{ publishTime }}</h4>
+          </header>
+          <footer>
+            <router-link class="read-more" :to="'/articles/' + id">点击继续阅读</router-link>
+          </footer>
+          <div class="line"></div>
+        </article>
+      </div>
     </div>
 </template>
 
@@ -35,66 +28,25 @@
 
     moment.locale('zh-CN')
     export default {
-        data() {
-            return {
-                offset: '',
-                articles: '',
-                maxPage: ''
-            }
-        },
-        created() {
-            console.log(typeof this.$route.query.page)
-            this.offset = this.$route.query.page * 5
-          request({
-            url:`/articles?isPublished=1&offset=${this.offset}&limit=5`,
-            method:'get'
-          }).then(res => {
-            console.log(res)
-            const pattern = /<!-- more -->/i
-            for (let article of res) {
-              article.publishTime = moment(article.publishTime).format('YYYY年 MMM DD日 HH:mm:ss')
-              pattern.test(article.content)
-              article.content = RegExp['$`']
-            }
-            this.articles = res
-            console.log(res.length)
-            this.maxPage = res.length
-          }).catch(err =>{
-            console.log(err)
-          })
-        },
-        methods: {
-            prevPage() {
-                if (this.$route.query.page > 0) {
-                    this.$router.push({path: '/articles', query: {page: this.$route.query.page - 1}})
-                }
-            },
-            nextPage() {
-                if (this.$route.query.page < this.maxPage - 1) {
-                    this.$router.push({path: '/articles', query: {page: parseInt(this.$route.query.page, 10) + 1}})
-                }
-            }
-        },
-        beforeRouteUpdate(to, from, next) {
-            if (to.path === '/articles') {
-                this.offset = to.query.page * 5
-              request({
-                url:`/articles?isPublished=1&offset=${this.offset}&limit=5`,
-                method:'get'
-              }).then(res => {
-                const pattern = /<!-- more -->/i
-                for (let article of res.articles) {
-                  article.publishTime = moment(article.publishTime).format('YYYY年 MMM DD日 HH:mm:ss')
-                  pattern.test(article.content)
-                  article.content = RegExp['$`']
-                }
-                this.articles = res.articles
-              }).catch(err =>{
-                console.log(err)
-              })
-            }
-            next()
+      data() {
+        return {
+          articles: ''
         }
+      },
+      created() {
+        request({
+          url:`/articles`,
+          method:'get'
+        }).then(res => {
+          for (let article of res) {
+            article.publishTime = moment(article.publishTime).format('YYYY年 MMM DD日 HH:mm:ss')
+            article.content = RegExp['$`']
+          }
+          this.articles = res
+        }).catch(err =>{
+          console.log(err)
+        })
+      }
     }
 </script>
 
@@ -109,8 +61,9 @@
     }
 
     .title {
-        color: $title;
+        color: #99c24d;
         padding-bottom: 0.3em;
+      font-weight: 500!important;
     }
 
     .title:hover {
@@ -119,24 +72,16 @@
 
     .read-more {
         color: $base;
+      &:hover{
+        color: #99c24d;
+      }
     }
+  .line{
+    width: 100%;
+    height: 0.5em;
+    background-color: #2c3e50;
+    margin-top: 0.5em;
+  }
 
-    .pagination {
-        @include flex($justify: space-between);
-        font-size: 1.5rem;
-        margin-top: 1.5em;
-    }
-
-    .prev,
-    .next {
-        a {
-            cursor: pointer;
-            color: $base;
-        }
-    }
-
-    .hide {
-        opacity: 0;
-    }
 </style>
 

@@ -3,7 +3,7 @@
 
     <header class="nav-container">
       <nav class="site-nav">
-        <span class="catalog">博客目录</span>
+        <div class="catalog">博客目录</div>
         <ul class="site-nav-list">
           <li>
             <a name="articles" @click="jump($event)" :class="{'active': $route.path === '/articles'}">文章</a>
@@ -44,7 +44,7 @@ export default {
             const path = evt.target.name
             switch (path) {
                 case 'articles':
-                    this.$router.push({path: `/${path}`, query: {page: 0}})
+                    this.$router.push('/articles')
                     break
                 case 'archives':
                     this.$router.push('/archives')
@@ -101,7 +101,9 @@ export default {
   .catalog{
     font-size: 3em;
     color: black;
-    padding: 0em 1.5em;
+    width: 5em;
+    text-align: center;
+    color: #fcee6d;
   }
     .site-nav-list {
       margin-top: 2em;

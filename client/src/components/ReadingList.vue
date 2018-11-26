@@ -53,6 +53,7 @@ export default {
 <style lang="scss" scoped>
   /*记得引入全局变量的文件*/
   @import "../assets/style/variable";
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -72,6 +73,8 @@ table {
     .col-1,
     .col-2 {
         width: 25%;
+      color: #999982;
+      font-weight: bold;
     }
 
     .col-2 {

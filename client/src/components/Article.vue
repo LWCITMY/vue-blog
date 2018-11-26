@@ -7,7 +7,7 @@
                 <span class="tag" v-for="tag in tags">{{ tag }}</span>
             </h4>
         </header>
-        <p v-html="content"></p>
+        <p v-html="content" class="color"></p>
     </article>
 </template>
 
@@ -56,4 +56,7 @@ export default {
     color: $quote;
     margin-right: 1em;
 }
+  .color{
+    color: #ffffff!important;
+  }
 </style>

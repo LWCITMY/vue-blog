@@ -39,10 +39,7 @@ export default new Router({
     {
       path: '*',
       redirect: {
-        path: 'articles',
-        query: {
-          page: 0
-        }
+        path: '/articles'
       }
     }
   ]

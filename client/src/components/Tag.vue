@@ -3,8 +3,8 @@
         <h1>标签</h1>
         <nav>
             <ul class="tags">
-                <li v-for="tag in tags">
-                    <a href="javascript:void(0)" @click="goAnchor(tag)">{{ tag }}</a>
+                <li v-for="tag in tags" >
+                    <span class="span">{{tag}}</span>
                 </li>
             </ul>
         </nav>
@@ -60,17 +60,17 @@ export default {
       })
     },
     methods: {
-        goAnchor(id) {
-            const anchor = document.getElementById(id)
-            if (window.innerWidth > 480) {
-                document.documentElement.scrollTop = anchor.offsetTop
-                document.body.scrollTop = anchor.offsetTop
-            }
-            else {
-                document.documentElement.scrollTop = anchor.offsetTop - 64
-                document.body.scrollTop = anchor.offsetTop - 64
-            }
-        }
+        // goAnchor(id) {
+        //     const anchor = document.getElementById(id)
+        //     if (window.innerWidth > 480) {
+        //         document.documentElement.scrollTop = anchor.offsetTop
+        //         document.body.scrollTop = anchor.offsetTop
+        //     }
+        //     else {
+        //         document.documentElement.scrollTop = anchor.offsetTop - 64
+        //         document.body.scrollTop = anchor.offsetTop - 64
+        //     }
+        // }
     }
 }
 </script>
@@ -100,5 +100,8 @@ export default {
     a {
         color: $base;
     }
+  .span{
+    color: $base;
+  }
 }
 </style>
