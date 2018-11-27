@@ -7,6 +7,7 @@ import Archive from '@/components/Archive'
 import Tag from '@/components/Tag'
 import ReadingList from '@/components/ReadingList'
 import About from '@/components/About'
+import Abouts from '@/components/Abouts'
 
 Vue.use(Router)
 
@@ -35,6 +36,10 @@ export default new Router({
     {
       path: '/about',
       component: About
+    },
+    {
+      path: '/abouts',
+      component: Abouts
     },
     {
       path: '*',
