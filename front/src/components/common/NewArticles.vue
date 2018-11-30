@@ -5,10 +5,14 @@
         <div class="main-Con">
           <article v-for="{id, title, publishTime, content} in articles" :key="id">
             <header>
-                <router-link class="Con-link" :to="'/articles/' + id">
-                  <div>{{ title }}</div>
-                  <div>{{ publishTime }}</div>
-                </router-link>
+                <!--<router-link class="Con-link" :to="'/articles/' + id">-->
+                  <!--<div>{{ title }}</div>-->
+                  <!--<div>{{ publishTime }}</div>-->
+                <!--</router-link>-->
+              <div class="Con-link" @click="view(id)">
+                <div>{{ title }}</div>
+                <div>{{ publishTime }}</div>
+              </div>
             </header>
           </article>
         </div>
@@ -23,8 +27,30 @@
       name: "NewArticles",
       data(){
           return{
-            articles: ''
+            articles: '',
+            Id:''
           }
+      },
+      watch:{
+        Id(newVal,oldVal){
+          this.$router.push('/articles')
+          // location.reload();
+          // this.$router.push('/articles/' + newVal)
+        }
+      },
+      methods:{
+        view(id){
+          this.$router.push('/articles/' + id)
+          this.Id = id
+          // request({
+          //   url: `/articles/${id}`,
+          //   method:'get'
+          // }).then(res=>{
+          //   console.log(res)
+          // }).catch(err=>{
+          //   console.log(err)
+          // })
+        }
       },
       created() {
         request({
@@ -32,11 +58,10 @@
           method:'get'
         }).then(res => {
           for (let article of res) {
-            article.publishTime = moment(article.publishTime).format('YYYY年 MMM DD日 HH:mm:ss')
-            article.content = RegExp['$`']
+            article.publishTime = moment(article.publishTime).format('YYYY年 MM DD日 HH:mm:ss')
+            // article.content = RegExp['$`']
           }
           this.articles = res
-          // console.log(res)
         }).catch(err =>{
           console.log(err)
         })
@@ -71,6 +96,7 @@
       line-height: 24px;
       &:hover>div:nth-child(1){
         color: #f65a8a;
+        cursor: pointer;
       }
       div:nth-child(1){
         font-size: 14px;

@@ -2,8 +2,9 @@
     <div class="tag-container">
         <h2>标签云</h2>
         <ul class="tag-list">
-            <li v-for="tag in tags">
-              <router-link :to="'/articles/' + tag.id">{{ tag.tags }}</router-link>
+            <li v-for="{id,tags} in tags">
+              <!--<router-link :to="'/articles/' + tag.id">{{ tag.tags }}</router-link>-->
+              <div class="asty" @click="view(id)">{{tags}}</div>
             </li>
         </ul>
     </div>
@@ -22,7 +23,19 @@ moment.locale('zh-CN')
 export default {
   data() {
     return {
-      tags: []
+      tags: [],
+      Id:''
+    }
+  },
+  watch:{
+    Id(newVal,oldVal){
+      this.$router.push('/articles')
+    }
+  },
+  methods:{
+    view(id){
+      this.$router.push('/articles/' + id)
+      this.Id = id
     }
   },
   created() {
@@ -31,6 +44,7 @@ export default {
       method:'get'
     }).then(res => {
       this.tags = res
+      console.log(res)
     }).catch(err => {
       console.log(err)
     })
@@ -63,7 +77,7 @@ export default {
         padding: 8px;
         margin: 5px;
         background-color: #FC9D9A;
-        a{
+        .asty{
           color: #ffffff;
         }
       }
